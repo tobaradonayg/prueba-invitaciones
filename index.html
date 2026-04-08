@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Invitación al Rancho</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Special+Elite&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --wood-dark: #3e2723;
+            --leather: #8d6e63;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f5f5f0;
+            color: var(--wood-dark);
+            margin: 0;
+            padding: 0;
+        }
+
+        .font-rustic { font-family: 'Special Elite', cursive; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+
+        /* Estilo optimizado para móvil */
+        .mobile-container {
+            max-width: 450px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: #fff9f0;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .hero-bg {
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
+                        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .wood-texture {
+            background-image: url("https://www.transparenttextures.com/patterns/wood-pattern.png");
+            background-color: #5d4037;
+        }
+
+        .btn-action {
+            background-color: var(--leather);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            font-weight: bold;
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 0 #5d4037;
+            transition: transform 0.1s;
+        }
+        .btn-action:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #5d4037;
+        }
+
+        .admin-panel {
+            background: white;
+            border: 2px solid var(--wood-dark);
+            padding: 15px;
+            margin: 10px;
+            border-radius: 12px;
+        }
+
+        .invitado-link {
+            font-size: 11px;
+            word-break: break-all;
+            background: #eee;
+            padding: 5px;
+            display: block;
+            margin-top: 5px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app" class="mobile-container">
+        <!-- VISTA DE ADMINISTRADOR (Para generar links) -->
+        <div id="adminView" class="hidden p-4">
+            <h2 class="font-serif text-2xl mb-4 border-b-2 border-amber-800 pb-2">Generador de Invitaciones</h2>
+            <p class="text-xs mb-4 text-gray-600 italic">Pega tu lista abajo (Formato: Nombre, cantidad). Ejemplo:<br>Juan Perez, 4</p>
+            
+            <textarea id="guestListInput" rows="6" class="w-full border p-2 text-sm mb-4" placeholder="Maria Garcia, 2&#10;Carlos Ruiz, 5"></textarea>
+            
+            <button onclick="generarLinks()" class="btn-action">Generar Todos los Links</button>
+            
+            <div id="linksResult" class="mt-6 space-y-4">
+                <!-- Aquí aparecerán los links generados -->
+            </div>
+        </div>
+
+        <!-- VISTA DEL INVITADO (La invitación real) -->
+        <div id="guestView" class="hidden">
+            <header class="hero-bg">
+                <h1 class="text-4xl font-serif mb-2 italic">Gran Fiesta en el Rancho</h1>
+                <p class="text-sm font-rustic uppercase tracking-widest">¡Estás invitado!</p>
+            </header>
+
+            <section class="p-6 text-center">
+                <div class="py-6 border-b border-amber-200">
+                    <h2 class="text-3xl font-serif text-amber-900 mb-2" id="guestName">Cargando...</h2>
+                    <p class="font-rustic text-amber-700 italic">Tenemos un lugar reservado para ti</p>
+                </div>
+
+                <div class="my-8 bg-amber-50 p-6 border-2 border-dashed border-amber-900 rounded-lg">
+                    <p class="text-sm uppercase tracking-widest mb-1">Pases Disponibles</p>
+                    <div class="text-5xl font-serif font-bold text-amber-900" id="guestPasses">0</div>
+                    <p class="text-xs mt-2 italic text-amber-700">Incluyéndote a ti</p>
+                </div>
+
+                <div class="text-left space-y-4 mb-8">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl">📅</span>
+                        <div>
+                            <p class="font-bold text-sm">Sábado, 15 de Octubre</p>
+                            <p class="text-xs text-gray-600">Desde las 2:00 PM</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl">📍</span>
+                        <div>
+                            <p class="font-bold text-sm">Rancho "Los Abuelos"</p>
+                            <p class="text-xs text-gray-600">Valle Alto, Camino Real #123</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="verUbicacion()" class="btn-action">📍 Ver en Google Maps</button>
+                <button onclick="confirmarWhatsApp()" class="btn-action">✅ Confirmar por WhatsApp</button>
+            </section>
+
+            <!-- Galería Simple para Móvil -->
+            <section class="px-4 pb-12">
+                <h3 class="text-center font-serif italic mb-4">Nuestro Rancho</h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <img src="https://images.unsplash.com/photo-1541448929002-da9b56bc7d40?auto=format&fit=crop&w=400&q=80" class="rounded h-40 w-full object-cover">
+                    <img src="https://images.unsplash.com/photo-1516467508483-a7212febe31a?auto=format&fit=crop&w=400&q=80" class="rounded h-40 w-full object-cover">
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // Configuración
+        const MI_WHATSAPP = "50370000000"; // Reemplaza con tu número sin el +
+
+        function init() {
+            const params = new URLSearchParams(window.location.search);
+            const guest = params.get('n');
+            const passes = params.get('p');
+
+            if (guest) {
+                // Si hay parámetros, mostrar vista de invitado
+                document.getElementById('guestView').classList.remove('hidden');
+                document.getElementById('guestName').innerText = `¡Hola, ${guest}!`;
+                document.getElementById('guestPasses').innerText = passes || "1";
+            } else {
+                // Si no hay parámetros, mostrar vista de administrador
+                document.getElementById('adminView').classList.remove('hidden');
+            }
+        }
+
+        // --- FUNCIONES DE ADMINISTRADOR ---
+        function generarLinks() {
+            const input = document.getElementById('guestListInput').value;
+            const container = document.getElementById('linksResult');
+            container.innerHTML = '<h3 class="font-bold text-sm">Links para enviar:</h3>';
+            
+            const lines = input.split('\n');
+            const baseUrl = window.location.href.split('?')[0];
+
+            lines.forEach(line => {
+                if(line.includes(',')) {
+                    const [nombre, cupos] = line.split(',');
+                    const nameClean = nombre.trim();
+                    const cuposClean = cupos.trim();
+                    const personalUrl = `${baseUrl}?n=${encodeURIComponent(nameClean)}&p=${cuposClean}`;
+                    
+                    const div = document.createElement('div');
+                    div.className = "p-3 bg-amber-50 rounded border border-amber-200";
+                    div.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-sm">${nameClean} (${cuposClean})</span>
+                            <button onclick="copiarAlPortapapeles('${personalUrl}')" class="text-xs bg-amber-800 text-white px-2 py-1 rounded">Copiar Link</button>
+                        </div>
+                        <code class="invitado-link">${personalUrl}</code>
+                    `;
+                    container.appendChild(div);
+                }
+            });
+        }
+
+        function copiarAlPortapapeles(texto) {
+            const el = document.createElement('textarea');
+            el.value = texto;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            alert("¡Link copiado! Ya puedes pegarlo en WhatsApp.");
+        }
+
+        // --- FUNCIONES DE INVITADO ---
+        function verUbicacion() {
+            window.open("https://maps.google.com/?q=Rancho+Los+Abuelos", "_blank");
+        }
+
+        function confirmarWhatsApp() {
+            const guest = new URLSearchParams(window.location.search).get('n');
+            const passes = new URLSearchParams(window.location.search).get('p');
+            const mensaje = `¡Hola! Soy ${guest}, confirmo mi asistencia al Rancho. Llevo conmigo a ${passes} personas. ¡Ahí nos vemos! 🤠`;
+            window.open(`https://wa.me/${MI_WHATSAPP}?text=${encodeURIComponent(mensaje)}`, "_blank");
+        }
+
+        // Ejecutar al cargar
+        window.onload = init;
+    </script>
+</body>
+</html>
